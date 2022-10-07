@@ -1,4 +1,7 @@
+mod parse_args;
+
 use std::fmt::{Display, Formatter};
+use self::parse_args::Frame;
 
 enum VertDir {
   Up,
@@ -45,29 +48,20 @@ impl Ball {
   }
 }
 
-struct Frame {
-  width: u32,
-  height: u32,
-}
-
 struct Game {
   frame: Frame,
   ball: Ball,
 }
 
 impl Game {
-  fn new() -> Game {
-    let frame = Frame {
-      width: 60,
-      height: 30,
-    };
+  fn new(frame: Frame) -> Game {
     let ball = Ball {
       x: 2,
       y: 4,
       vert_dir: VertDir::Up,
       horiz_dir: HorizDir::Left,
     };
-    Game {frame, ball}
+    Game { frame, ball }
   }
 
   fn step(&mut self) {
@@ -78,7 +72,7 @@ impl Game {
 
 impl Display for Game {
   fn fmt(&self, fmt: &mut Formatter) -> std::fmt::Result {
-    let top_bottom = |fmt: &mut Formatter| {
+    let top_bottom_ = |fmt: &mut Formatter| {
       write!(fmt, "+")?;
       for _ in 0..self.frame.width {
         write!(fmt, "-")?;
@@ -86,7 +80,7 @@ impl Display for Game {
       write!(fmt, "+\n")
     };
 
-    top_bottom(fmt)?;
+    top_bottom_(fmt)?;
     for row in 0..self.frame.height {
       write!(fmt, "|")?;
       for column in 0..self.frame.width {
@@ -99,12 +93,13 @@ impl Display for Game {
       }
       write!(fmt, "|\n")?;
     }
-    top_bottom(fmt)
+    top_bottom_(fmt)
   }
 }
 
-fn main() {
-  let mut game = Game::new();
+fn main() -> Result<(), parse_args::ParseError> {
+  let frame = parse_args::parse_args()?;
+  let mut game = Game::new(frame);
   let sleep_duration = std::time::Duration::from_millis(33);
   loop {
     println!("{}", game);

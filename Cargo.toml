@@ -1,5 +1,5 @@
 [package]
-name = "Bouncy"
+name = "bouncy"
 version = "0.1.0"
 edition = "2021"
 
